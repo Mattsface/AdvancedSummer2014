@@ -1,7 +1,4 @@
-require './deck.rb'
-require './cypher.rb'
-require './encrypter.rb'
-require './decrypter.rb'
+require './solitare.rb'
 
 
 string = "This is a freaking test!! Ruby rules!"
@@ -11,7 +8,7 @@ deck = Deck.new
 length = message.string.delete(' ').length
 
 
-while keystream.length <  length
+while keystream.length < length
 	deck.move_joker_a
 	deck.move_joker_b
 	deck.triple_cut

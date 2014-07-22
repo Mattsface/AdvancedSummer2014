@@ -18,7 +18,6 @@ describe "solitare script" do
 
   it "should split messages into five character groups" do
   
-
   end
 
   it "should convert the string to numbers" do
