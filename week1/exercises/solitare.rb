@@ -1,3 +1,51 @@
+
+class Optparsesolitare
+
+
+  def self.parse(args)
+
+    options = OpenStruct.new
+    opt_parser = OptionParser.new do |opts|
+      opts.banner = "Usage: solitare_crypt.rb -d [decrypt] -e [encrypt] -o [output file name] -x [output key-stream file name] -k [input key-stream file name]"
+
+      opts.separator ""
+      opts.separator "Required Arguments:"
+
+      opts.on('-d', "--decrypt [string]", String, "Decrypt string using the specified key-stream") do |d|
+        options.decrypt = d
+      end
+
+      opts.on('-e', "--encrypt [string]", String, "Encrypt string using generated key-stream") do |e|
+        options.encrypt = e 
+      end
+
+      opts.on('-o', "--output", "Output encrypted file") do |o|
+        options.output = o
+      end
+
+      opts.on('-x', "--encrypt-key", "Output encryption key") do |x|
+        options.deck = x
+      end
+
+      opts.on('-k', "--key [string]", String, "Input encryption key") do |k|
+        options.key = k 
+      end
+      
+      opts.separator ""
+      opts.separator "Common options:"
+
+      # No argument, shows at tail.  This will print an options summary.
+      # Try it and see!
+      opts.on_tail("-h", "--help", "Show this message") do
+        puts opts
+        exit
+      end
+    end
+    opt_parser.parse!(args)
+    options
+  end
+end
+
 class Cypher
 	attr_accessor :string
 
@@ -32,7 +80,8 @@ class Encrypter
 	def initialize(message, keystream)
 		@keystream = keystream
 		@message = message.delete(' ')
-		@en_array = []
+		@array = []
+
 		@alphabet = { :A => 1, :B => 2, :C => 3, :D => 4, 
 		:E => 5, :F => 6, :G => 7, :H => 8, :I => 9, 
 		:J => 10, :K => 11, :L => 12, :M => 13, :N => 14, 
@@ -47,36 +96,41 @@ class Encrypter
 		en_message = convert_to_numbers(@message)
 		i = 0
 		en_keystream.each do |x|	
-			@en_array << combine_numbers(x, en_message[i])
+			@array << combine_number((en_message[i] + x))
 			i = i + 1
 		end
 	end
 
+  def decrypt
+    de_keystream = convert_to_numbers(@keystream)
+    de_message = convert_to_numbers(@message)
+    i = 0
+    de_keystream.each do |x|  
+      @array << combine_number((de_message[i] - x))
+      i = i + 1
+    end
+    puts @array
+  end
+
 	def convert_to_letters
 		string = ""
 		invert_alphabet = @alphabet.invert
-		@en_array.each do |x|
+		@array.each do |x|
 			string << invert_alphabet[x].to_s
 		end
-
 		return string.scan(/.{5}|.+/).join(" ")
 	end
 
 
-	def combine_numbers(x, y)
-		z = y + x 
-		
-		if z > 26 
-			z = z - 26
-		end
-
-		return z 
-
-	end
+  def combine_number(x)
+    return x + 26 if x < 1
+    return x - 26 if x > 26
+    return x 
+  end
 
 
 	def convert_to_numbers(string)
-		
+		  
 		number_string_array = []
 		array_string = string.split
 		array_string.each do |x|
@@ -88,63 +142,6 @@ class Encrypter
 	end
 end
 
-class Decrypter
-	def initialize(message, keystream)
-		@message = message.delete(' ')
-		@keystream = keystream
-		@de_array = []
-		@alphabet = { :A => 1, :B => 2, :C => 3, :D => 4, 
-		:E => 5, :F => 6, :G => 7, :H => 8, :I => 9, 
-		:J => 10, :K => 11, :L => 12, :M => 13, :N => 14, 
-		:O => 15, :P => 16, :Q => 17, :R => 18, :S => 19, 
-		:T => 20, :U => 21, :V => 22, :W => 23, :X => 24, 
-		:Y => 25, :Z => 26 }
-	end
-
-	def decrypt
-		de_keystream = convert_to_numbers(@keystream)
-		de_message = convert_to_numbers(@message)
-		i = 0
-		de_keystream.each do |x|	
-			@de_array << combine_numbers(x, de_message[i])
-			i = i + 1
-		end
-	end
-
-	def combine_numbers(k, m)
-
-		if m <= k
-			m = m + 26
-		end
-		
-		z = m - k
-
-		return z 
-
-	end
-
-	def convert_to_letters
-		string = ""
-		invert_alphabet = @alphabet.invert
-		@de_array.each do |x|
-			string << invert_alphabet[x].to_s
-		end
-
-		return string.scan(/.{5}|.+/).join(" ")
-	end
-
-	def convert_to_numbers(string)
-		
-		number_string_array = []
-		array_string = string.split
-		array_string.each do |x|
-			x.each_char do |y|
-				number_string_array << @alphabet[y.to_sym].to_i	
-			end	
-		end
-		number_string_array
-	end
-end
 
 class Deck
 
