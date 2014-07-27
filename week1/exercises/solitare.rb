@@ -1,7 +1,5 @@
 
 class Optparsesolitare
-
-
   def self.parse(args)
 
     options = OpenStruct.new
@@ -53,6 +51,10 @@ class Cypher
 		@string = string
 		format_string
 	end
+
+  def length
+    @string.delete(' ').length
+  end
 
 	private 
 	def format_string
@@ -109,7 +111,6 @@ class Encrypter
       @array << combine_number((de_message[i] - x))
       i = i + 1
     end
-    puts @array
   end
 
 	def convert_to_letters

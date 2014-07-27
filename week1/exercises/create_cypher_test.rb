@@ -18,10 +18,9 @@ elsif options.encrypt
   
   message = Cypher.new(options.encrypt)
   deck = Deck.new
-  length = message.string.delete(' ').length
   keystream = ""
 
-  while keystream.length < length
+  while keystream.length < message.length
     deck.move_joker_a
     deck.move_joker_b
     deck.triple_cut
